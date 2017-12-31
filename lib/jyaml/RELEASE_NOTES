@@ -1,0 +1,10 @@
+RELEASE NOTES for JYaml 1.3:
+  Summary: |
+    Still maintaining. 
+  Bugs closed:
+    - Encoder now puts quotes around asterisk (*)and ampersand(&)
+    - fix for escaping of quotes (")
+    - opened up the scope of fields in Wrapper class to protected
+    - Fixed unescaping: only escaped characters inside double quoted strings are unescaped during parser
+    - Fixed weird bug due to unhandled \r\n for dos style line breaks in the parser
+    - Fixed bug where extra invalid content after a valid YAML document is ignored, this was very confusing because invalid documents were parsered successfully with unexpected results.

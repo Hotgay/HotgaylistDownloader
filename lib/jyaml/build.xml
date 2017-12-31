@@ -1,0 +1,150 @@
+<project basedir="." default="dist" name="jyaml">
+	
+	<!-- Summary of Targets
+		build 	this builds the source and creates jyaml-lib.jar
+		test 	this runs all junit tests
+		build14	this builds the source and creates jyaml-lib-14.jar for the 1.4 JVM (using Retrotranslator).
+				Note: When using this option, you must deploy the Retrotranslator runtime libraries with your program.
+		test14	this runs all junit tests using on a 1.4 JVM
+		all		this builds and tests both the 1.5 and the 1.4 versions
+	-->
+	
+	<!--
+		For environment specific configuration, edit project.properties. You will need to do this if
+		you want to run junit tests.
+		-->
+	<property file="project.properties" />
+	
+	<path id="classpath">
+		<pathelement location="bin" />
+		<pathelement location="${JUNIT_HOME}/junit.jar" />
+	</path>
+	
+	<path id="classpath14">
+		<pathelement location="bin14" />
+		<pathelement location="${JUNIT_HOME}/junit.jar" />
+		<pathelement location="retrotranslator/retrotranslator-transformer-0.9.8.jar"/>
+		<pathelement location="retrotranslator/retrotranslator-runtime-0.9.8.jar"/>
+		<pathelement location="retrotranslator/backport-util-concurrent.jar"/>
+	</path>
+	<taskdef name="retro-transform" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask" 
+		classpathref="classpath14"/>
+	
+	<!-- targets -->
+	
+	<target depends="test, test14" name="all"/>
+	
+	<target name="init">
+		<mkdir dir="bin" />
+		<mkdir dir="bin14"/>
+		<mkdir dir="dist" />
+		<mkdir dir="testout" />
+	</target>
+	
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="bin14"/>
+		<delete dir="dist"/>
+		<delete dir="testout" />
+	</target>
+	
+	<target depends="init" name="build">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac destdir="bin" nowarn="on" target="1.5">
+			<src path="src" />
+			<classpath refid="classpath" />
+		</javac>
+		<antcall target="package"/>
+	</target>
+	
+	<target depends="init" name="package">
+		<copy file="LICENSE" todir="bin"/>
+		<jar destfile="dist/jyaml-${version}.jar" basedir="bin" excludes="org/ho/yaml/tests/**"/>
+	</target>
+
+	<target depends="build" name="test">
+		<junit printsummary="yes" fork="yes">
+		  <formatter type="plain"/>
+		  <classpath refid="classpath"/>
+		  <test name="org.ho.yaml.tests.IntegrationTests" todir="testout" outfile="IntegrationTests-output"/>
+		</junit>
+	</target>
+	
+	<target depends="build" name="dist">
+		<tar destfile="dist/jyaml-src-${version}.tgz" compression="gzip">
+		  <tarfileset dir="src" prefix="jyaml/src"/>
+		  <tarfileset dir="examples" prefix="jyaml/examples"/>
+	      <tarfileset dir="retrotranslator" prefix="jyaml/retrotranslator"/>
+		  <tarfileset dir="." prefix="jyaml">
+		  	<include name="build.xml"/>
+		  	<include name="LICENSE"/>
+		  	<include name="RELEASE_NOTES"/>
+		  	<include name="CHANGE_LOG"/>
+		  	<include name="project.properties"/>
+		  	<include name="TODO"/>
+		  	<include name=".project"/>
+		  	<include name=".classpath"/>
+		  	<include name="yml"/>
+		  </tarfileset>
+		</tar>
+	</target>
+	
+	<!-- below are for building for the 1.4 VM -->
+	<target depends="build" name="translate14">
+		<retro-transform srcdir="bin" destdir="bin14" />
+	</target>
+	
+	<target name="build14">
+		<antcall target="translate14"/>
+		<antcall target="package14"/>
+	</target>
+			
+	<target depends="init" name="package14">
+		<copy file="LICENSE" todir="bin14"/>
+		<jar destfile="dist/jyaml-lib-14.jar" basedir="bin14" excludes="org/ho/yaml/tests/**"/>
+	</target>
+	
+	<target depends="build14" name="test14">
+		<junit printsummary="yes" fork="yes" jvm="${java.home.14}/bin/java">
+		  <formatter type="plain"/>
+		  <classpath refid="classpath14"/>
+		  <test name="org.ho.yaml.tests.IntegrationTests" todir="testout" outfile="IntegrationTests-output-1.4"/>
+		</junit>
+	</target>
+	
+	
+	<!-- below is to build the YAML4Spring jar -->
+	
+	<path id="spring-classpath">
+		<pathelement path="lib/spring.jar"/>
+		<pathelement path="lib/commons-logging.jar"/>
+		<pathelement location="bin"/>
+	</path>
+	
+	<target depends="init, build" name="spring">
+		<javac destdir="bin" nowarn="on" target="1.5">
+			<src path="external" />
+			<include name="org/springframework/**"/>
+			<classpath refid="spring-classpath" />
+		</javac>
+		<copy file="LICENSE" todir="bin"/>
+		<jar destfile="dist/yaml4spring.jar" basedir="bin" includes="org/springframework/**,LICENSE" excludes="**/test/**"/>
+	</target>
+	
+	<!-- below is to build the YAML4DbUnit jar -->
+	
+	<path id="dbunit-classpath">
+		<pathelement path="lib/dbunit-2.2.jar"/>
+		<pathelement location="bin"/>
+	</path>
+	
+	<target depends="init, build" name="dbunit">
+		<javac destdir="bin" nowarn="on" target="1.5">
+			<src path="external" />
+			<include name="org/dbunit/**"/>
+			<classpath refid="dbunit-classpath" />
+		</javac>
+		<copy file="LICENSE" todir="bin"/>
+		<jar destfile="dist/yaml4dbunit.jar" basedir="bin" includes="org/dbunit/**,LICENSE" excludes="**/test/**"/>
+	</target>
+</project>
