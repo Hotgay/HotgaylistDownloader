@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import autoloader.Reference;
 import autoloader.conf.Configuration;
+import autoloader.conf.Reference;
 
 public class FileUtils {
 

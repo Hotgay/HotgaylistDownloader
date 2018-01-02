@@ -10,12 +10,16 @@ import javax.swing.border.EmptyBorder;
 
 public class View extends JFrame {
 
+	private static View instance = new View();
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextPane txtPanel;
+
+	public int indentation = 0;
 
 	/**
 	 * Create the frame.
@@ -32,22 +36,41 @@ public class View extends JFrame {
 		txtPanel.setText("File downloader");
 		JScrollPane scroll = new JScrollPane(txtPanel);
 		contentPane.add(scroll, BorderLayout.CENTER);
-		
+
 		setVisible();
 	}
-	
+
 	public void setVisible() {
 		this.setVisible(true);
 	}
 
-	public void addMessage(String text) {
-		String previousMessages = txtPanel.getText();
+	public static void addMessage(String text) {
+		String previousMessages = instance.txtPanel.getText();
 		previousMessages += "\n";
-		previousMessages += text;
+		previousMessages += instance.getIndent() + text;
 
-		txtPanel.setText(previousMessages);
-		
+		instance.txtPanel.setText(previousMessages);
+
 		System.out.println(text);
 	}
 
+	public static void addSeparator() {
+		addMessage("==========");
+	}
+
+	public String getIndent() {
+		String indentationString = new String();
+		for (int i = 0; i < indentation; i++) {
+			indentationString += "  ";
+		}
+		return indentationString;
+	}
+
+	public static void increaseIndentation() {
+		instance.indentation = (instance.indentation < 10) ? instance.indentation + 1 : 10;
+	}
+
+	public static void decreaseIndentation() {
+		instance.indentation = (instance.indentation > 0) ? instance.indentation - 1 : 0;
+	}
 }

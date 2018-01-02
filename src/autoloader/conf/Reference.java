@@ -1,11 +1,10 @@
-package autoloader;
+package autoloader.conf;
 
 public class Reference {
 
 	private String name;
 	private String url;
 	private String activity;
-	private String lastId;
 
 	public Reference() {
 		super();
@@ -16,7 +15,6 @@ public class Reference {
 		this.name = name;
 		this.url = url;
 		this.activity = Boolean.toString(false);
-		this.lastId = new String();
 	}
 
 	public String getName() {
@@ -49,14 +47,6 @@ public class Reference {
 
 	public void setActive(boolean active) {
 		this.activity = String.valueOf(active);
-	}
-
-	public String getLastId() {
-		return lastId;
-	}
-
-	public void setLastId(String lastId) {
-		this.lastId = lastId;
 	}
 
 }

@@ -1,20 +1,16 @@
 package autoloader.conf;
 
 import java.io.FileNotFoundException;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import autoloader.Reference;
 import autoloader.utils.YamlLoader;
 
 public class Configuration {
 
-	public String filePath;
-
-	private String websiteUrl;
-	private boolean updateContentMap;
-	private Map<String, Reference> contentMap;
+	private String filePath;
 	private String defaultFolder;
+	private Set<Reference> contentMap;
 
 	public Configuration() {
 		super();
@@ -22,11 +18,10 @@ public class Configuration {
 
 	public Configuration(String filePath, String defaultFolder) {
 		super();
+
 		this.filePath = filePath;
 		this.defaultFolder = defaultFolder;
-		this.websiteUrl = new String();
-		this.updateContentMap = true;
-		this.contentMap = new TreeMap<String, Reference>();
+		this.contentMap = new HashSet<Reference>();
 	}
 
 	public static Configuration loadConfiguration(String filePath, String folderPath) {
@@ -57,27 +52,11 @@ public class Configuration {
 		this.defaultFolder = defaultFolder;
 	}
 
-	public String getWebsiteUrl() {
-		return websiteUrl;
-	}
-
-	public void setWebsiteUrl(String websiteUrl) {
-		this.websiteUrl = websiteUrl;
-	}
-
-	public boolean isUpdateContentMap() {
-		return updateContentMap;
-	}
-
-	public void setUpdateContentMap(boolean updateContentMap) {
-		this.updateContentMap = updateContentMap;
-	}
-
-	public Map<String, Reference> getContentMap() {
+	public Set<Reference> getContentMap() {
 		return contentMap;
 	}
 
-	public void setContentMap(Map<String, Reference> contentMap) {
+	public void setContentMap(Set<Reference> contentMap) {
 		this.contentMap = contentMap;
 	}
 
